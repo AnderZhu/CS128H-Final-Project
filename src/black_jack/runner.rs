@@ -45,6 +45,7 @@ impl BlackJackRunner {
             }
         };
         self.deck = Deck::new(deck_n);
+        self.deck.shuffle();
 
         println!("\n####### Game Started! #######\n");
 
@@ -81,6 +82,7 @@ impl BlackJackRunner {
             // if !next_game(&mut players, &mut dealer_hand, &mut deck) {
             //     break;
             // }
+            break;
         }
     }
 }
@@ -106,9 +108,15 @@ fn player_turn(player: &mut Player, deck: &mut Deck, dealer: bool) {
         player.get_score()
     );
     while !win_or_lose(player) {
-        match ask_input("What do you want to do?\nAvailable Commands: (h)it, (s)tand")
-            .to_lowercase()
-            .trim()
+        match ask_input(
+            format!(
+                "{} What do you want to do?\nAvailable Commands: (h)it, (s)tand",
+                player
+            )
+            .as_str(),
+        )
+        .to_lowercase()
+        .trim()
         {
             "h" | "hit" => {
                 player.hit(deck);
@@ -116,8 +124,9 @@ fn player_turn(player: &mut Player, deck: &mut Deck, dealer: bool) {
                 for card in player.get_hand() {
                     println!("{}", card);
                 }
-                println!("{}", player.get_score());
+                println!("Now you got {} points", player.get_score());
             }
+
             "s" | "stand" => {
                 println!("{} stood", player);
                 break;
@@ -130,6 +139,19 @@ fn player_turn(player: &mut Player, deck: &mut Deck, dealer: bool) {
 
 //if player has won or lost
 fn win_or_lose(player: &mut Player) -> bool {
+    if player.has_black_jack() {
+        println!("BLACKJACK!\n");
+        return true;
+    } else {
+        if player.get_score() == 21 {
+            println!("YOU GOT 21 POINTS!\n");
+            return true;
+        }
+        if player.get_score() > 21 {
+            println!("BUST.\nI'm afraid you lose this game :(\n");
+            return true;
+        }
+    }
     false
 }
 

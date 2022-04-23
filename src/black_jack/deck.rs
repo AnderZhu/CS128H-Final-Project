@@ -18,7 +18,7 @@ impl Deck {
         Deck { cards, deck_n }
     }
     // shuffle
-    fn shuffle(&mut self) {
+    pub fn shuffle(&mut self) {
         self.cards.shuffle(&mut thread_rng());
     }
 

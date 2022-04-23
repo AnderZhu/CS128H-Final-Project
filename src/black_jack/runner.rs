@@ -58,7 +58,7 @@ impl BlackJackRunner {
                     if val >= 1 && val <= 7 {
                         break val;
                     } else {
-                        println!("The number of decks must be between 6 and 8");
+                        println!("The number of decks must be between 1 and 7");
                     }
                 }
                 Err(_) => {

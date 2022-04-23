@@ -68,6 +68,10 @@ impl BlackJackRunner {
         };
         ask_set_player_attributes(player_n, &mut self.players, &mut self.deck);
         set_dealer(&mut self.dealer, &mut self.deck);
+        let mut blackjack_on_game = false;
+        //if someone blackjack
+        // todo()
+
         println!(
             "\nThe first card of the dealer is {}\n",
             &self.dealer.get_hand()[0]
@@ -76,13 +80,54 @@ impl BlackJackRunner {
         loop {
             for player in self.players.iter_mut() {
                 player_turn(player, &mut self.deck, false);
+                if player.has_black_jack() {
+                    blackjack_on_game = true;
+                    break;
+                }
             }
 
-            // end_game(&mut players, &dealer_hand);
+            end_game(&mut self.players, &self.dealer, blackjack_on_game);
             // if !next_game(&mut players, &mut dealer_hand, &mut deck) {
             //     break;
             // }
             break;
+        }
+    }
+}
+fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool) {
+    println!("####### Game Finished #######\n");
+    if dealer.has_black_jack() {
+        for player in players {
+            if player.has_black_jack() {
+                println!("{player} tied! :|\n");
+            }
+            println!("{player} lost! :(\n",);
+        }
+        return;
+    } else {
+        //dealer dont have blackjack
+        //if player have blackjack
+        if (blackjack_on_game) {
+            for player in players {
+                if player.has_black_jack() {
+                    println!("{player} won! :)\n",);
+                } else {
+                    println!("{player} lost! :(\n",);
+                }
+            }
+        } else {
+            // player dont have blackjack
+            let dealer_points = dealer.get_score();
+            for player in players.iter_mut() {
+                let player_points = player.get_score();
+                if player_points > dealer_points {
+                    println!("{player} won! :)\n",);
+                } else if player_points < dealer_points {
+                    println!("{player} lost! :(\n",);
+                } else {
+                    println!("{player} tied! :|\n");
+                }
+            }
         }
     }
 }

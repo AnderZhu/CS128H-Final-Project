@@ -2,25 +2,20 @@ use crate::black_jack::card::Card;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use std::vec;
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Deck {
     cards: Vec<Card>,
-    deck_count: usize,
-    card_index: usize,
+    deck_n: usize,
 }
 
 impl Deck {
     //  make new deck of cards
-    fn new(deck_count: usize) -> Deck {
-        let mut cards: Vec<Card> = Vec::with_capacity(52 * deck_count);
-        for _ in 0..deck_count {
+    pub fn new(deck_n: usize) -> Deck {
+        let mut cards: Vec<Card> = Vec::new();
+        for _ in 0..deck_n {
             cards.append(&mut Deck::make_deck());
         }
-        Deck {
-            cards,
-            deck_count,
-            card_index: 0,
-        }
+        Deck { cards, deck_n }
     }
     // shuffle
     fn shuffle(&mut self) {

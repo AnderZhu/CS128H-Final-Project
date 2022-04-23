@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Clone)]
 pub struct Card {
     pub suit: String,
@@ -40,27 +42,33 @@ impl PartialEq for Card {
     }
 }
 
+impl fmt::Display for Card {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
+}
+
 #[test]
 
 fn test_score_for_numbers() {
     let card = Card {
-        suit: "Hearts".into(),
-        value: "2".into(),
+        suit: "Spades".into(),
+        value: "3".into(),
     };
-    assert_eq!(card.score(), 2);
+    assert_eq!(card.score(), 3);
 }
 
 #[test]
 fn test_score_for_face_card() {
     let card = Card {
         suit: "Hearts".into(),
-        value: "K".into(),
+        value: "Q".into(),
     };
     assert_eq!(card.score(), 10);
 }
 
 #[test]
-fn test_name() {
+fn test_str() {
     let card = Card {
         suit: "Hearts".into(),
         value: "K".into(),

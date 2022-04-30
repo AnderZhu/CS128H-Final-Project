@@ -1,6 +1,6 @@
 use std::fmt;
 
-use super::*;
+// use super::*;
 use crate::black_jack::card::Card;
 use crate::black_jack::deck::Deck;
 
@@ -17,7 +17,7 @@ impl fmt::Display for Player {
 
 impl Player {
     pub fn new(name: String) -> Player {
-        let mut hand = vec![];
+        let hand = vec![];
         Player { name, hand }
     }
 
@@ -30,8 +30,7 @@ impl Player {
     }
     pub fn get_score(&self) -> u32 {
         //get score of all cards added
-        let mut score = 0;
-        score = self.hand.iter().fold(0, |acc, card| acc + card.score());
+        let mut score = self.hand.iter().fold(0, |acc, card| acc + card.score());
 
         // situation when might want A as 11 or 1
         if score > 21 {

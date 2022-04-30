@@ -1,11 +1,9 @@
 use std::io;
 use std::io::Write;
 
-use crate::black_jack::card::Card;
+// use crate::black_jack::card::Card;
 use crate::black_jack::deck::Deck;
 use crate::black_jack::player::Player;
-
-use super::deck;
 
 /// Runs a BlackJack game on the command line.
 #[derive(Clone, Default)]
@@ -107,7 +105,7 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
     } else {
         //dealer dont have blackjack
         //if player have blackjack
-        if (blackjack_on_game) {
+        if blackjack_on_game {
             for player in players {
                 if player.has_black_jack() {
                     println!("{player} won! :)\n",);

@@ -5,7 +5,6 @@ use std::vec;
 #[derive(Clone, Default)]
 pub struct Deck {
     cards: Vec<Card>,
-    deck_n: usize,
 }
 
 impl Deck {
@@ -15,7 +14,7 @@ impl Deck {
         for _ in 0..deck_n {
             cards.append(&mut Deck::make_deck());
         }
-        Deck { cards, deck_n }
+        Deck { cards }
     }
     // shuffle
     pub fn shuffle(&mut self) {

@@ -77,7 +77,7 @@ impl BlackJackRunner {
 
         loop {
             for player in self.players.iter_mut() {
-                player_turn(player, &mut self.deck, false);
+                player_turn(player, &mut self.deck);
                 if player.has_black_jack() {
                     blackjack_on_game = true;
                     break;
@@ -142,7 +142,7 @@ fn ask_set_player_attributes(player_n: usize, players: &mut Vec<Player>, deck: &
     }
 }
 
-fn player_turn(player: &mut Player, deck: &mut Deck, dealer: bool) {
+fn player_turn(player: &mut Player, deck: &mut Deck) {
     let initial_cards = player.get_hand();
     println!(
         "\nYour cards are:\n{} and {} ({} points)\n",

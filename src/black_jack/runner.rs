@@ -98,9 +98,9 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
     if dealer.bust() {
         for player in players.iter_mut() {
             if !player.bust() {
-                println!("{player} won! :)\n");
+                println!("{:} won! :)\n", player);
             }
-            println!("{player} lost! :(\n",);
+            println!("{:} lost! :(\n", player);
         }
         return;
     }
@@ -108,9 +108,9 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
     if dealer.has_black_jack() {
         for player in players {
             if player.has_black_jack() {
-                println!("{player} tied! :|\n");
+                println!("{:} tied! :|\n", player);
             }
-            println!("{player} lost! :(\n",);
+            println!("{:} lost! :(\n", player);
         }
         return;
     } else {
@@ -119,9 +119,9 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
         if blackjack_on_game {
             for player in players {
                 if player.has_black_jack() {
-                    println!("{player} won ! :)\n",);
+                    println!("{:} won ! :)\n", player);
                 } else {
-                    println!("{player} lost! :(\n",);
+                    println!("{} lost! :(\n", player);
                 }
             }
         } else {
@@ -131,14 +131,14 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
                 let player_points = player.get_score();
                 if player_points > dealer_points {
                     if player.bust() {
-                        println!("{player} lost! :(\n",);
+                        println!("{:} lost! :(\n", player);
                     } else {
-                        println!("{player} won! :)\n",);
+                        println!("{:} won! :)\n", player);
                     }
                 } else if player_points < dealer_points {
-                    println!("{player} lost! :(\n",);
+                    println!("{:} lost! :(\n", player);
                 } else {
-                    println!("{player} tied! :|\n");
+                    println!("{:} tied! :|\n", player);
                 }
             }
         }
@@ -147,7 +147,7 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
 fn dealer_turn(dealer: &mut Player, deck: &mut Deck) {
     println!("\nThe dealer's cards are {} points\n", dealer.get_score());
     for card in dealer.get_hand() {
-        println!("{card}\n")
+        println!("{:}\n", card)
     }
     while !dealer.bust() && dealer.get_score() < 17 {
         println!("The dealer is going to hit a card\n");
@@ -157,7 +157,7 @@ fn dealer_turn(dealer: &mut Player, deck: &mut Deck) {
             dealer.get_score()
         );
         for card in dealer.get_hand() {
-            println!("{card}\n")
+            println!("{:}\n", card)
         }
     }
     if dealer.bust() {

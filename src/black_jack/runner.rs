@@ -83,9 +83,10 @@ impl BlackJackRunner {
                     break;
                 }
             }
+            dealer_turn(&mut self.dealer, &mut self.deck);
 
             end_game(&mut self.players, &self.dealer, blackjack_on_game);
-            // if !next_game(&mut players, &mut dealer_hand, &mut deck) {
+            // if !next_game(&mut self.players, &mut self.dealer, &mut self.deck) {
             //     break;
             // }
             break;
@@ -94,6 +95,16 @@ impl BlackJackRunner {
 }
 fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool) {
     println!("####### Game Finished #######\n");
+    if dealer.bust() {
+        for player in players.iter_mut() {
+            if !player.bust() {
+                println!("{player} won! :)\n");
+            }
+            println!("{player} lost! :(\n",);
+        }
+        return;
+    }
+    print!("dealer has {} points \n\n", dealer.get_score());
     if dealer.has_black_jack() {
         for player in players {
             if player.has_black_jack() {
@@ -108,7 +119,7 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
         if blackjack_on_game {
             for player in players {
                 if player.has_black_jack() {
-                    println!("{player} won! :)\n",);
+                    println!("{player} won ! :)\n",);
                 } else {
                     println!("{player} lost! :(\n",);
                 }
@@ -119,7 +130,11 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
             for player in players.iter_mut() {
                 let player_points = player.get_score();
                 if player_points > dealer_points {
-                    println!("{player} won! :)\n",);
+                    if player.bust() {
+                        println!("{player} lost! :(\n",);
+                    } else {
+                        println!("{player} won! :)\n",);
+                    }
                 } else if player_points < dealer_points {
                     println!("{player} lost! :(\n",);
                 } else {
@@ -129,6 +144,27 @@ fn end_game(players: &mut Vec<Player>, dealer: &Player, blackjack_on_game: bool)
         }
     }
 }
+fn dealer_turn(dealer: &mut Player, deck: &mut Deck) {
+    println!("\nThe dealer's cards are {} points\n", dealer.get_score());
+    for card in dealer.get_hand() {
+        println!("{card}\n")
+    }
+    while !dealer.bust() && dealer.get_score() < 17 {
+        println!("The dealer is going to hit a card\n");
+        dealer.hit(deck);
+        println!(
+            "Now, the cards of the dealer are: {} points\n",
+            dealer.get_score()
+        );
+        for card in dealer.get_hand() {
+            println!("{card}\n")
+        }
+    }
+    if dealer.bust() {
+        println!("dealer busted!\n")
+    }
+}
+
 fn set_dealer(dealer: &mut Player, deck: &mut Deck) {
     dealer.initial_r(deck);
 }
@@ -153,7 +189,7 @@ fn player_turn(player: &mut Player, deck: &mut Deck) {
     while !win_or_lose(player) {
         match ask_input(
             format!(
-                "{} What do you want to do?\nAvailable Commands: (h)it, (s)tand",
+                "\n{} What do you want to do?\nAvailable Commands: (h)it, (s)tand",
                 player
             )
             .as_str(),
@@ -205,3 +241,22 @@ fn ask_input(prompt: &str) -> String {
     io::stdin().read_line(&mut input).expect("Failed to read");
     input
 }
+// fn next_game(player: &mut Vec<Player>, dealer: &mut Player, deck: &mut Deck) -> bool {
+//     match ask_input(
+//         format!(
+//             "\n{} Play another round?\nAvailable Commands: (y)es, (n)o",
+//             player
+//         )
+//         .as_str(),
+//     )
+//     .to_lowercase()
+//     .trim()
+//     {
+//         "y" | "yes" => {}
+
+//         "n" | "no" => {}
+
+//         _ => println!("Invalid command!\nAvailable Commands: (y)es, (n)o"),
+//     }
+//     false
+// }

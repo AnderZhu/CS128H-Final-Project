@@ -1,6 +1,5 @@
 use std::fmt;
 
-// use super::*;
 use crate::black_jack::card::Card;
 use crate::black_jack::deck::Deck;
 
@@ -62,5 +61,9 @@ impl Player {
     pub fn hit(&mut self, deck: &mut Deck) {
         let card = deck.deal_card();
         self.hand.push(card);
+    }
+
+    pub fn bust(&self) -> bool {
+        self.get_score() > 21
     }
 }

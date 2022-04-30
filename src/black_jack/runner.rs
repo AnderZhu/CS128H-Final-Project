@@ -227,7 +227,7 @@ fn win_or_lose(player: &mut Player) -> bool {
             return true;
         }
         if player.get_score() > 21 {
-            println!("BUST.I'm afraid you lose this game :(\n");
+            println!("BUST. I'm afraid you lose this game :(\n");
             return true;
         }
     }

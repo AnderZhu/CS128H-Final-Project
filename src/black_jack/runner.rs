@@ -189,7 +189,7 @@ fn player_turn(player: &mut Player, deck: &mut Deck) {
     while !win_or_lose(player) {
         match ask_input(
             format!(
-                "\n{} What do you want to do?\nAvailable Commands: (h)it, (s)tand",
+                "\n{} What do you want to do?Available Commands: (h)it, (s)tand\n",
                 player
             )
             .as_str(),
@@ -199,11 +199,11 @@ fn player_turn(player: &mut Player, deck: &mut Deck) {
         {
             "h" | "hit" => {
                 player.hit(deck);
-                println!("Now, the cards are: ");
+                println!("\nNow, the cards are: \n");
                 for card in player.get_hand() {
-                    println!("{}", card);
+                    println!("{}\n", card);
                 }
-                println!("Now you got {} points", player.get_score());
+                println!("Now you got {} points\n", player.get_score());
             }
 
             "s" | "stand" => {
@@ -227,7 +227,7 @@ fn win_or_lose(player: &mut Player) -> bool {
             return true;
         }
         if player.get_score() > 21 {
-            println!("BUST.\nI'm afraid you lose this game :(\n");
+            println!("BUST.I'm afraid you lose this game :(\n");
             return true;
         }
     }

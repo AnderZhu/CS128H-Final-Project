@@ -78,7 +78,7 @@ fn state(state: u32, input: String) {
                 }
             }
             Err(_) => {
-                RESPOND = 5;
+                RESPOND = 11;
             }
         }
     } else if state == 3 { // Game start

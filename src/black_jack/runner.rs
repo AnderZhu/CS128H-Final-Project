@@ -169,7 +169,7 @@ fn set_dealer(dealer: &mut Player, deck: &mut Deck) {
     dealer.initial_r(deck);
 }
 
-fn ask_set_player_attributes(player_n: usize, players: &mut Vec<Player>, deck: &mut Deck) {
+pub fn ask_set_player_attributes(player_n: usize, players: &mut Vec<Player>, deck: &mut Deck) {
     for i in 0..player_n {
         let name = ask_input(format!("\nPlease, enter your name player #{}", i + 1).as_str());
 

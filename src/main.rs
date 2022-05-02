@@ -10,10 +10,17 @@ use rocket::tokio::select;
 
 pub mod black_jack;
 use black_jack::runner::BlackJackRunner;
+use crate::black_jack::player::Player;
+use crate::black_jack::deck::Deck;
 
 #[post("/message", data = "<form>")]
 fn post(form: Form<Message>, queue: &State<Sender<Message>>) {
     unsafe { if STATE != 0 { state(STATE, form.message.clone()); }}
+    if form.message.clone() == "Dealer" {
+        unsafe { RESPOND = 15; }
+    } else if form.message.clone() == "State" {
+        unsafe { RESPOND = 404; }
+    }
     let _res = queue.send(form.into_inner());
 }
 
@@ -25,8 +32,10 @@ fn game() {
 
 static mut STATE: u32 = 0;
 static mut RESPOND: u32 = 0;
-static mut DECK: u32 = 0;
-static mut PLAYER: u32 = 0;
+static mut ITERATOR: usize = 0;
+static mut N_PLAYER: usize = 0;
+static mut PLAYERS: Vec<Player> = vec![];
+static mut DECK: Vec<Deck> = vec![];
 
 #[get("/events")]
 async fn events(queue: &State<Sender<Message>>, mut end: Shutdown) -> EventStream![] {
@@ -67,12 +76,12 @@ fn state(state: u32, input: String) {
         STATE = 2;
         RESPOND = 2;
     } else if state == 2 { // Ask for number of decks
-        match input.parse::<u32>() {
+        match input.parse::<usize>() {
             Ok(val) => {
                 if val >= 6 && val <= 8 {
                     STATE = 3;
                     RESPOND = 3;
-                    DECK = val;
+                    DECK.push(Deck::new(val));
                 } else {
                     RESPOND = 10;
                 }
@@ -85,12 +94,12 @@ fn state(state: u32, input: String) {
         STATE = 4;
         RESPOND = 4
     } else if state == 4 { // Ask for number of players
-        match input.parse::<u32>() {
+        match input.parse::<usize>() {
             Ok(val) => {
                 if val >= 1 && val <= 7 {
                     STATE = 5;
                     RESPOND = 5;
-                    PLAYER = val;
+                    N_PLAYER = val;
                 } else {
                     RESPOND = 12;
                 }
@@ -99,8 +108,21 @@ fn state(state: u32, input: String) {
                 RESPOND = 11;
             }
         }
-    } else if state == 5 { //
-
+    } else if state == 5 { // Establish new players
+        if ITERATOR < N_PLAYER {
+            PLAYERS.push(Player::new(String::from(input.trim())));
+            PLAYERS[ITERATOR + 1].initial_r(&mut DECK[0]);
+            ITERATOR += 1;
+        }
+        if ITERATOR >= N_PLAYER { // Initialize dealer
+            PLAYERS[0].initial_r(&mut DECK[0]);
+            STATE = 6;
+            RESPOND = 6;
+            ITERATOR = 0;
+        }
+    } else if state == 6 { //
+        STATE = 7;
+        RESPOND = 7;
     } else if state == 10 { // Abort
         STATE = 0;
         RESPOND = 0;
@@ -109,28 +131,33 @@ fn state(state: u32, input: String) {
     }}
 }
 
-fn respond(state: u32) -> Event {
-    if state == 0 {
+fn respond(respond: u32) -> Event {
+    unsafe {
+    if respond == 0 {
         bot("Game aborted.")
-    } else if state == 1 {
-        bot("Welcome to BlackJack! Enter \"quit\" to leave the game")
-    } else if state == 2 {
+    } else if respond == 1 {
+        bot("Welcome to BlackJack! Enter \"quit\" to leave the game\t(Type anything to continue)")
+    } else if respond == 2 {
         bot("How many decks do you wanna use? (6-8)")
-    } else if state == 3 {
-        bot("####### Game Started! #######")
-    } else if state == 4 {
+    } else if respond == 3 {
+        bot("####### Game Started! #######\t(Type anything to continue)")
+    } else if respond == 4 {
         bot("How many players are playing? (1-7)")
-    } else if state == 5 {
+    } else if respond == 5 {
+        bot(format!("Player {}, please, enter your name.", ITERATOR + 1).as_str())
+    } else if respond == 6 {
+        bot(format!("The first card of the dealer is {}\t(Type anything to continue)", PLAYERS[0].get_hand()[0]).as_str())
+    } else if respond == 7 {
         bot("")
-    } else if state == 10 {
+    } else if respond == 10 {
         bot("The number of decks must be between 6 and 8")
-    } else if state == 11 {
+    } else if respond == 11 {
         bot("Expect integer input")
-    } else if state == 12 {
+    } else if respond == 12 {
         bot("The number of players must be between 1 and 7")
     } else {
-        unsafe { bot(format!("Error! STATE: {}\tRESPOND: {}", STATE, RESPOND).as_str()) }
-    }
+        bot(format!("Error! STATE: {}\tRESPOND: {}\t Please restart program.", STATE, RESPOND).as_str())
+    }}
 }
 
 fn bot(str: &str) -> Event {
@@ -142,6 +169,7 @@ fn bot(str: &str) -> Event {
 
 #[launch]
 fn rocket() -> _ {
+    unsafe { PLAYERS.push(Player::new(String::from("Dealer"))); }
     rocket::build()
         .manage(channel::<Message>(1024).0)
         .mount("/", routes![post, events, game])

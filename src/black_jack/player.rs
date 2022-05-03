@@ -47,7 +47,8 @@ impl Player {
 
     //determine if player has black_jack
     pub fn has_black_jack(&self) -> bool {
-        return self.get_score() == 21;
+        println!("score: {} cards: {}", self.get_score(), self.hand.len());
+        return self.get_score() == 21 && self.hand.len() == 2;
     }
 
     //initial round get from deck
